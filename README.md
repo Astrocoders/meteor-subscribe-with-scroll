@@ -29,7 +29,7 @@ Template.Foo.onRendered(function(){
 In server:
 ```js
   // Syntax here is from astrocoders:publish package
-  // Limit is automatically increase as more the user reaches the end of the
+  // Limit is automatically increased as more the user reaches the end of the
   // threshold element.
   Items.publish('userItems').ifSignedIn().mongoRule((params) => {
     return {
