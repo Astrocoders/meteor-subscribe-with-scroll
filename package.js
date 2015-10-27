@@ -13,7 +13,6 @@ Package.onUse(function(api) {
     'ecmascript',
     'astrocoders:publish',
     'astrocoders:infinite-scroll',
-    'dburles:mongo-collection-instances',
     'underscore',
     'reactive-var',
     'tracker'
