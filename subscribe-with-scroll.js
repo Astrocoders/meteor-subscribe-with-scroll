@@ -10,19 +10,21 @@ SubscribeWithScroll = class {
    *  	increment: Number,
    *  	template: Blaze.TemplateInstance,
    *  	threshold: String,
-   *  	params: Function
+   *  	params: Function,
+   *  	collection: Mongo.Collection
    *  }
    * @return {SubscribeWithScroll}
    */
   constructor(options){
     this.pub = options.pub;
+    this.collection = options.collection;
     this.limit = new ReactiveVar(options.limit);
     this.increment = options.increment;
-    this.subscribe = options.template && options.template.subscribe ||
-                    Meteor.subscribe;
+    this.template = options.template || Meteor;
     this.params = options.params || function(){};
     this.infiniteScroll =
       new InfiniteScroll(options.threshold, options.template);
+    this.events = $({});
 
     return this;
   }
@@ -34,16 +36,29 @@ SubscribeWithScroll = class {
     }
   }
 
+  onEnd(fn){
+    return this.events.on('end', fn);
+  }
+
   run(){
     this.computation = Tracker.autorun(() => {
       let params = _.extend(this.params(), {
         limit: this.limit.get()
       });
-      this.subscribe(this.pub, params);
+
+      let countBefore = this.collection.find().count();
+      this.template.subscribe(this.pub, params, () => {
+        let count = this.collection.find().count();
+        if(countBefore === count){
+          this.events.trigger('end');
+        }
+      });
     });
 
     this.infiniteScroll.onInfinite(() => {
       this.limit.set( this.limit.get() + this.increment );
     });
+
+    this.infiniteScroll.run();
   }
 };
