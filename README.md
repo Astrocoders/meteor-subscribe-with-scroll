@@ -6,7 +6,20 @@ Get more data from a subscription as more the user scrolls.
 ## Usage
 
 In client
+```css
+/* To be able to scroll, ensure these styles to your threshold */
+  .overflow-scroll {
+    overflow-y: scroll;
+  }
+```
+
 ```js
+Template.Foo.helpers({
+  listHasEnded: function(){
+    return Template.instance().SubscribeWithScroll.hasEnded.get();
+  }
+});
+
 Template.Foo.onRendered(function(){
   this.SubscribeWithScroll = new SubscribeWithScroll({
     pub: 'userItems',
