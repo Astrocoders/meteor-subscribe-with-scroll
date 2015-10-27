@@ -1,24 +1,26 @@
-/* globals SubscribeWithScroll, InfiniteScroll */
+/* globals SubscribeWithScroll, InfiniteScroll, jQuery */
 
 SubscribeWithScroll = class {
   /**
    * Initializes the SubscribeWithScroll
    * @param  {Object} options
-   *  {
-   *  	pub: String,
-   *  	limit: Number,
-   *  	increment: Number,
-   *  	template: Blaze.TemplateInstance,
-   *  	threshold: String,
-   *  	params: Function,
-   *  	collection: Mongo.Collection
-   *  }
    * @return {SubscribeWithScroll}
    */
   constructor(options){
+    check(options, {
+    	pub: String,
+    	limit: Match.Integer,
+    	increment: Match.Integer,
+    	template: Match.Optional(Blaze.TemplateInstance),
+    	threshold: Match.OneOf(String, jQuery),
+    	params: Match.Optional(Function),
+    	collection: Mongo.Collection
+    });
+
     this.pub = options.pub;
     this.collection = options.collection;
     this.limit = new ReactiveVar(options.limit);
+    this.hasEnded = new ReactiveVar(false);
     this.increment = options.increment;
     this.template = options.template || Meteor;
     this.params = options.params || function(){};
@@ -42,7 +44,7 @@ SubscribeWithScroll = class {
 
   run(){
     this.computation = Tracker.autorun(() => {
-      let params = _.extend(this.params(), {
+      let params = _.extend(this.params() || {}, {
         limit: this.limit.get()
       });
 
@@ -51,6 +53,7 @@ SubscribeWithScroll = class {
         let count = this.collection.find().count();
         if(countBefore === count){
           this.events.trigger('end');
+          this.hasEnded.set(true);
         }
       });
     });
