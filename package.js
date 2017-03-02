@@ -12,8 +12,7 @@ Package.onUse(function(api) {
   api.use([
     'ecmascript',
     'check',
-    'astrocoders:publish',
-    'astrocoders:infinite-scroll',
+    'astrocoders:infinite-scroll@0.0.2',
     'underscore',
     'reactive-var',
     'tracker'
