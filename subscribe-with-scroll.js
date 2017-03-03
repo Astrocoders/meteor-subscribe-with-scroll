@@ -50,11 +50,15 @@ SubscribeWithScroll = class {
 
       let countBefore = this.collection.find().count();
       this.template.subscribe(this.pub, params, () => {
-        let count = this.collection.find().count();
-        if(countBefore === count){
-          this.events.trigger('end');
-          this.hasEnded.set(true);
-        }
+        Tracker.afterFlush(() => {
+          const count = this.collection.find().count();
+          if(countBefore === count){
+            this.events.trigger('end');
+            this.hasEnded.set(true);
+          } else {
+            this.hasEnded.set(false);
+          }
+        })
       });
     });
 
