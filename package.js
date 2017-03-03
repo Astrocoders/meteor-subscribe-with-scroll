@@ -1,6 +1,6 @@
 Package.describe({
   name: 'astrocoders:subscribe-with-scroll',
-  version: '0.0.2',
+  version: '0.0.3',
   summary: 'Infinite Scroll with Meteor subscription system',
   git: '',
   documentation: 'README.md'
